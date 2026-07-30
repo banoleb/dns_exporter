@@ -1,0 +1,67 @@
+# DNS Exporter configuration
+# ----------------------------
+# Each entry under `modules` is an independent DNS-checking job.
+# The exporter polls all modules every `scrape_interval` seconds and exposes
+# the results at http://localhost:<port>/metrics.
+
+exporter:
+  port: 9253            # TCP port for the /metrics HTTP endpoint
+  scrape_interval: 30   # seconds between polling cycles
+
+# ---------------------------------------------------------------------------
+# Module definitions
+# ---------------------------------------------------------------------------
+# Each module may define:
+#   server        - DNS server URL  (protocol://host:port)
+#                   Supported protocols: udp (default), tcp
+#   timeout       - query timeout in seconds  (default: 5)
+#   queries       - list of {query_name, query_type} pairs to send
+#   custom_labels - arbitrary key/value pairs added to every metric emitted
+#                   by this module (useful for env, region, tier, etc.)
+# ---------------------------------------------------------------------------
+
+modules:
+
+  dns-query-adns1:
+    server: "udp://rs2.example.org:53"
+    timeout: 5
+    queries:
+      - query_name: "5.114.223.11.in-addr.arpa"
+        query_type: "PTR"
+    custom_labels:
+      custom_label_1: "adns1"
+      env: "production"
+
+  dns-query-quad9-mx:
+    server: "udp://dns.quad9.net:53"
+    timeout: 5
+    queries:
+      - query_name: "gmail.com"
+        query_type: "MX"
+      - query_name: "google.com"
+        query_type: "A"
+    custom_labels:
+      custom_label_1: "quad9"
+      env: "production"
+
+  dns-query-cloudflare-tcp:
+    server: "tcp://1.1.1.1:53"
+    timeout: 10
+    queries:
+      - query_name: "example.com"
+        query_type: "A"
+    custom_labels:
+      custom_label_1: "cloudflare"
+      env: "production"
+
+  dns-query-google-8888:
+    server: "udp://8.8.8.8:53"
+    timeout: 5
+    queries:
+      - query_name: "example.com"
+        query_type: "AAAA"
+      - query_name: "example.com"
+        query_type: "NS"
+    custom_labels:
+      custom_label_1: "google"
+      env: "production"

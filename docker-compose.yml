@@ -1,0 +1,8 @@
+services:
+  dns-exporter:
+    build: .
+    ports:
+      - "9253:9253"
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+    restart: unless-stopped
